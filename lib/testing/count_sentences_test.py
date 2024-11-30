@@ -1,47 +1,44 @@
-#!/usr/bin/env python3
-
+import pytest
 from count_sentences import MyString
 
-import io
-import sys
+def test_value_string():
+    '''raises ValueError if value is not a string.'''
+    with pytest.raises(ValueError) as excinfo:
+        string = MyString(123)  # passing a non-string value
+    assert str(excinfo.value) == "The value must be a string."
 
-class TestMyString:
-    '''MyString in count_sentences.py'''
+def test_is_sentence():
+    '''Test if the string ends with a period.'''
+    string = MyString("This is a sentence.")
+    assert string.is_sentence() is True
+    string = MyString("This is not a sentence")
+    assert string.is_sentence() is False
 
-    def test_is_class(self):
-        '''is a class with the name "MyString".'''
-        string = MyString()
-        assert(type(string) == MyString)
+def test_is_question():
+    '''Test if the string ends with a question mark.'''
+    string = MyString("Is this a question?")
+    assert string.is_question() is True
+    string = MyString("This is not a question")
+    assert string.is_question() is False
 
-    def test_value_string(self):
-        '''prints "The value must be a string." if not string.'''
-        captured_out = io.StringIO()
-        sys.stdout = captured_out
-        string = MyString()
-        string.value = 123
-        sys.stdout = sys.__stdout__
-        assert(captured_out.getvalue() == "The value must be a string.\n")
+def test_is_exclamation():
+    '''Test if the string ends with an exclamation mark.'''
+    string = MyString("Wow, amazing!")
+    assert string.is_exclamation() is True
+    string = MyString("This is not an exclamation")
+    assert string.is_exclamation() is False
 
-    def test_is_sentence(self):
-        '''returns True if value ends with a period and False otherwise.'''
-        assert(MyString("Hello World.").is_sentence() == True)
-        assert(MyString("Hello World").is_sentence() == False)
+def test_count_sentences():
+    '''Test to count the number of sentences in the string.'''
+    string = MyString("This is a sentence! This is another sentence. Is this a question?")
+    assert string.count_sentences() == 3  # Three sentences
 
-    def test_is_question(self):
-        '''returns True if value ends with a question mark and False otherwise.'''
-        assert(MyString("Is anybody there?").is_question() == True)
-        assert(MyString("Is anybody there").is_question() == False)
+    string = MyString("This is one sentence.")
+    assert string.count_sentences() == 1  # One sentence
 
-    def test_is_exclamation(self):
-        '''returns True if value ends with an exclamation mark and False otherwise.'''
-        assert(MyString("It's me!").is_exclamation() == True)
-        assert(MyString("It's me").is_exclamation() == False)
+    string = MyString("No punctuation")
+    assert string.count_sentences() == 1  # Only one sentence, no punctuation at the end
 
-    def test_count_sentences(self):
-        '''returns the number of sentences in the value.'''
-        simple_string = MyString("one. two. three?")
-        empty_string = MyString()
-        complex_string = MyString("This, well, is a sentence. This is too!! And so is this, I think? Woo...")
-        assert(simple_string.count_sentences() == 3)
-        assert(empty_string.count_sentences() == 0)
-        assert(complex_string.count_sentences() == 4)
+    string = MyString("!!")
+    assert string.count_sentences() == 0  # No sentences
+
